@@ -1,4 +1,12 @@
-FROM gocd/gocd-agent-alpine-3.13
+FROM gocd/gocd-agent-alpine-3.13:v21.2.0
+
+USER root
+# Install apk dependencies
+RUN apk --no-cache add \
+        curl ca-certificates \
+        coreutils git gnupg \
+        openssl jq
+
 
 # Import hashicorp GPG signingkey for consul etc
 COPY hashicorp.key hashicorp2.key
@@ -78,15 +86,15 @@ RUN curl -L https://amazon-ecr-credential-helper-releases.s3.amazonaws.com/${AMA
     docker-credential-ecr-login version
 
 # Install helm 3
-ENV HELM_VERSION=3.4.0
-ENV HELM_BASE_URL="https://get.helm.sh"
-ENV HELM_TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
-
-RUN curl -L ${HELM_BASE_URL}/${HELM_TAR_FILE} | tar xvz && \
-    mv linux-amd64/helm /usr/bin/helm && \
-    chmod +x /usr/bin/helm && \
-    rm -rf linux-amd64 && \
-    helm version
+# ENV HELM_VERSION=3.4.0
+# ENV HELM_BASE_URL="https://get.helm.sh"
+# ENV HELM_TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
+#
+# RUN curl -L ${HELM_BASE_URL}/${HELM_TAR_FILE} | tar xvz && \
+#     mv linux-amd64/helm /usr/bin/helm && \
+#     chmod +x /usr/bin/helm && \
+#     rm -rf linux-amd64 && \
+#     helm version
 
 ENV ACMESH_VERSION=2.8.9
 RUN curl https://raw.githubusercontent.com/acmesh-official/acme.sh/${ACMESH_VERSION}/acme.sh | BRANCH=${ACMESH_VERSION} sh -s -- --install-online --no-cron --cert-home ~/ce-certs
